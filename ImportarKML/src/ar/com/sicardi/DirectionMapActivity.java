@@ -13,10 +13,12 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -118,6 +120,14 @@ public class DirectionMapActivity extends MapActivity {
         urlString.append(","); 
         urlString.append( Double.toString(destD.get(1).doubleValue())); 
         urlString.append("&ie=UTF8&0&om=0&output=kml"); */
+       
+       Intent mapIntent = new Intent(Intent.ACTION_VIEW, null);
+       //Uri uri1 = Uri.parse("geo:0,0?q=http://code.google.com/apis/kml/documentation/KML_Samples.kml");
+       
+       Uri uri1 = Uri.parse("geo:-34.9134721,-57.9614658?q=http://maps.google.com.ar/maps/ms?authuser=0&vps=8&hl=es&ie=UTF8&msa=0&output=kml");
+       mapIntent.setData(uri1);
+       startActivity(Intent.createChooser(mapIntent, "Sample Map ")); 
+        
         urlString.append("http://maps.google.com/maps?f=d&hl=en&saddr=-34.9134721,-57.9614658&daddr=-14.9134721,-57.9614658&ie=UTF8&0&om=0&output=kml");
         
         try{ 
@@ -143,7 +153,7 @@ public class DirectionMapActivity extends MapActivity {
             // dibuja la RUTA
              drawPath(ds, Color.parseColor("#add331"), mapView ); 
  
-            // encontrar los límites usando itemized overlay 
+            // encontrar los lï¿½mites usando itemized overlay 
             GeoPoint destPoint = new GeoPoint(destD.get(0).intValue(),destD.get(1).intValue()); 
             GeoPoint currentPoint = new GeoPoint( new Double(lastKnownLocation.getLatitude()*1E6).intValue() 
                                                 ,new Double(lastKnownLocation.getLongitude()*1E6).intValue() ); 
