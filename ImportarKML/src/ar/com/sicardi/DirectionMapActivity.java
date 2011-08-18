@@ -123,7 +123,6 @@ public class DirectionMapActivity extends MapActivity {
        
        Intent mapIntent = new Intent(Intent.ACTION_VIEW, null);
        //Uri uri1 = Uri.parse("geo:0,0?q=http://code.google.com/apis/kml/documentation/KML_Samples.kml");
-       
        Uri uri1 = Uri.parse("geo:-34.9134721,-57.9614658?q=http://maps.google.com.ar/maps/ms?authuser=0&vps=8&hl=es&ie=UTF8&msa=0&output=kml");
        mapIntent.setData(uri1);
        startActivity(Intent.createChooser(mapIntent, "Sample Map ")); 
