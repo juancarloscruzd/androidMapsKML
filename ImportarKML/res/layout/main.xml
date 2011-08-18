@@ -35,7 +35,8 @@
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
 		android:enabled="true"
-		android:apiKey="0w_0qYnGE7_o3UvqedZXE43pg90jc6l06n5e9zg"
+		android:apiKey="0w_0qYnGE7_qYkn4jKbPFEuScDjxD1bsPYATwSQ"
 		android:clickable="true" />
-		
+		<!-- android:apiKey="0w_0qYnGE7_qYkn4jKbPFEuScDjxD1bsPYATwSQ" laburo 
+		     android:apiKey="0w_0qYnGE7_o3UvqedZXE43pg90jc6l06n5e9zg" casa HP  -->
 </LinearLayout>

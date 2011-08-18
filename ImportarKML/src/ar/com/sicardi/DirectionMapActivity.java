@@ -9,6 +9,10 @@ import java.util.List;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 
@@ -47,7 +51,15 @@ public class DirectionMapActivity extends MapActivity {
  
         mapView = (MapView) findViewById(R.id.mapview); 
         mapView.setBuiltInZoomControls(true); 
-        
+        parseandoLocal();
+        //parseandoPorAPI();
+ 
+    } 
+
+    /***
+     * 
+     */
+    public void parseandoLocal(){
         btnSatelite = (Button)findViewById(R.id.BtnSatelite);
         btnCentrar = (Button)findViewById(R.id.BtnCentrar);
         btnAnimar = (Button)findViewById(R.id.BtnAnimar);
@@ -109,6 +121,7 @@ public class DirectionMapActivity extends MapActivity {
         destD.add(latitud);
         destD.add(longitud);
         
+        
        StringBuilder urlString = new StringBuilder(); 
       /* urlString.append("http://maps.google.com/maps?f=d&hl=en"); 
         urlString.append("&saddr=");//from 
@@ -120,6 +133,9 @@ public class DirectionMapActivity extends MapActivity {
         urlString.append(","); 
         urlString.append( Double.toString(destD.get(1).doubleValue())); 
         urlString.append("&ie=UTF8&0&om=0&output=kml"); */
+       urlString.append("http://www.prolab.unlp.edu.ar/prolabBeta/images/convenioAFA/PartidosFinal.kml");
+       //commit
+       //commit
        //commit
        Intent mapIntent = new Intent(Intent.ACTION_VIEW, null);
        //Uri uri1 = Uri.parse("geo:0,0?q=http://code.google.com/apis/kml/documentation/KML_Samples.kml");
@@ -149,7 +165,7 @@ public class DirectionMapActivity extends MapActivity {
             // Retorna los datos generados del parseo en un DATASET
             NavigationDataSet ds = navSaxHandler.getParsedData(); 
  
-            // dibuja la RUTA
+            // dibuja la RUTA/puntos
              drawPath(ds, Color.parseColor("#add331"), mapView ); 
  
             // encontrar los l�mites usando itemized overlay 
@@ -173,10 +189,30 @@ public class DirectionMapActivity extends MapActivity {
  
         } catch(Exception e) { 
             Log.d("DirectionMap","Exception parsing kml."); 
-        } 
- 
-    } 
+        }    	
+    }
+    
+    /***
+     * 
+     */
+    public void parseandoPorAPI(){
+    	final HttpClient client = new DefaultHttpClient();
+    	final HttpGet get = new HttpGet("http://maps.google.com/maps?f=d&hl=en&saddr=-34.9134721,-57.9614658&daddr=-14.9134721,-57.9614658&ie=UTF8&0&om=0&output=kml");
+    	try {
+    	    final HttpResponse resp = client.execute(get);
+    	    android.util.Log.e("MapOverlays", resp.toString());
+    	} catch (Throwable t) {
+    	    android.util.Log.e("MapOverlays", "Exception", t);
+    	}
+    	final Intent intent = new Intent(
+    			android.content.Intent.ACTION_VIEW, 
+    			Uri.parse("geo:0,0?q=http://www.prolab.unlp.edu.ar/prolabBeta/images/convenioAFA/PartidosFinal.kml"));
+    	startActivity(intent);
+    	//"http://maps.google.com.ar/maps/ms?authuser=0&vps=2&hl=es&ie=UTF8&msa=0&output=kml&msid=210826482800711502689.0004aa13f8cbd69bf1b2c"
+        //startActivity(Intent.createChooser(mapIntent, "Sample Map ")); 
 
+    }
+    
     /** 
      * Does the actual drawing of the route, based on the geo points provided in the nav set 
      * 
