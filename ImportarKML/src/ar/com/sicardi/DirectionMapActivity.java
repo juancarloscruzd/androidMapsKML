@@ -135,7 +135,6 @@ public class DirectionMapActivity extends MapActivity {
         urlString.append("&ie=UTF8&0&om=0&output=kml"); */
        urlString.append("http://www.prolab.unlp.edu.ar/prolabBeta/images/convenioAFA/PartidosFinal.kml");
        //commit   
-   
        Intent mapIntent = new Intent(Intent.ACTION_VIEW, null);
        //Uri uri1 = Uri.parse("geo:0,0?q=http://code.google.com/apis/kml/documentation/KML_Samples.kml");
        Uri uri1 = Uri.parse("geo:-34.9134721,-57.9614658?q=http://maps.google.com.ar/maps/ms?authuser=0&vps=8&hl=es&ie=UTF8&msa=0&output=kml");
