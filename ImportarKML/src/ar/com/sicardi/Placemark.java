@@ -6,7 +6,14 @@ public class Placemark {
 	String description; 
 	String coordinates; 
 	String address; 
+	String styleUrl;
 	 
+	public String getStyleUrl() {
+		return styleUrl;
+	}
+	public void setStyleUrl(String styleUrl) {
+		this.styleUrl = styleUrl;
+	}
 	public String getTitle() { 
 	    return title; 
 	} 

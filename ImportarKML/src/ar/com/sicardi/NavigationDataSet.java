@@ -7,8 +7,22 @@ import java.util.Iterator;
 public class NavigationDataSet { 
 
 private ArrayList<Placemark> placemarks = new ArrayList<Placemark>(); 
+private ArrayList<Style> styles = new ArrayList<Style>(); 
 private Placemark currentPlacemark; 
-private Placemark routePlacemark; 
+private Placemark routePlacemark;
+private Style currentStyle; 
+
+public ArrayList<Style> getStyles() {
+	return styles;
+}
+
+public void setStyles(ArrayList<Style> styles) {
+	this.styles = styles;
+}
+
+public void setCurrentStyle(Style currentStyle) {
+	this.currentStyle = currentStyle;
+}
 
 public String toString() { 
 String s= ""; 
@@ -45,4 +59,12 @@ public Placemark getRoutePlacemark() {
  
 public void setRoutePlacemark(Placemark routePlacemark) {     
 	this.routePlacemark = routePlacemark; }
+
+public Style getCurrentStyle() {
+	return currentStyle;
+}
+
+public void addCurrentStyle() {
+	styles.add(currentStyle); 
+}
 }

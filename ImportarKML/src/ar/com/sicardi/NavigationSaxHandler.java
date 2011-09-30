@@ -25,10 +25,13 @@ private boolean in_geometrycollectiontag = false;
 private boolean in_linestringtag = false; 
 private boolean in_pointtag = false; 
 private boolean in_coordinatestag = false; 
+private boolean in_styleUrl = false;
 
 private StringBuffer buffer; 
 
-private NavigationDataSet navigationDataSet = new NavigationDataSet(); 
+private NavigationDataSet navigationDataSet = new NavigationDataSet();
+private boolean in_style = false;
+private boolean in_iconHref =  false; 
 
 // =========================================================== 
 // Getter & Setter 
@@ -77,7 +80,13 @@ String qName, Attributes atts) throws SAXException {
 	} else if (localName.equals("coordinates")) { 
 		buffer = new StringBuffer(); 
 		this.in_coordinatestag = true; 
-	} 
+    } else if (localName.equals("styleUrl")) { 
+    	this.in_styleUrl = true;  
+	} else if (localName.equals("Style")) { 
+		this.in_style  = true;  
+	} else if (localName.equals("href")) { 
+		this.in_iconHref = true; 
+	}
 } 
 
 /** Gets be called on closing tags like: 
@@ -106,7 +115,14 @@ if (localName.equals("kml")) {
 	this.in_pointtag = false; 
 } else if (localName.equals("coordinates")) { 
 	this.in_coordinatestag = false; 
-} 
+} else if (localName.equals("styleUrl")) { 
+	this.in_styleUrl = false; 
+} else if (localName.equals("Style")) { 
+	this.in_style = false; 
+	navigationDataSet.addCurrentStyle(); 
+}  else if (localName.equals("href")) { 
+	this.in_iconHref = false; 
+}  
 } 
 
 /** Gets be called on the following structure: 
@@ -126,5 +142,15 @@ if(this.in_nametag){
 		    navigationDataSet.getCurrentPlacemark().setCoordinates(new String(ch, start, length)); 
 			buffer.append(ch, start, length); 
 	} 
+	else 
+	if(this.in_styleUrl){ 
+		if (navigationDataSet.getCurrentPlacemark()==null) navigationDataSet.setCurrentPlacemark(new Placemark()); 
+		    navigationDataSet.getCurrentPlacemark().setStyleUrl(new String(ch, start, length).toString()); 
+	} 
+	else 
+		if(this.in_iconHref ){ 
+			if (navigationDataSet.getCurrentPlacemark()==null) navigationDataSet.setCurrentPlacemark(new Placemark()); 
+			    navigationDataSet.getCurrentStyle().setIconHref(new String(ch, start, length).toString()); 
+		} 
 } 
 }

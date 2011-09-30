@@ -135,7 +135,7 @@ public class DirectionMapActivity extends MapActivity {
        StringBuilder urlString = new StringBuilder(); 
         //commit     
         //urlString.append("http://maps.google.com/maps?f=d&hl=es&saddr=-34.9134721,-57.9614658&daddr=-34.9134721,-57.9614658&ie=UTF8&0&om=0&output=kml");
-       urlString.append("http://www.prolab.unlp.edu.ar/prolabBeta/images/convenioAFA/PartidosFinal.kml");
+       urlString.append("http://dl.dropbox.com/u/20919379/PartidosFinal.kml");
         
         try{ 
             //setea la url
@@ -156,9 +156,6 @@ public class DirectionMapActivity extends MapActivity {
             xmlreader.parse(is); 
             // Retorna los datos generados del parseo en un DATASET
             NavigationDataSet ds = navSaxHandler.getParsedData(); 
- 
-            // dibuja la RUTA/puntos
-            drawStadium(ds, Color.parseColor("#add331"), mapView ); //drawPath dibuja ruta
  
             if (rutas) {
                 // dibuja la RUTA/puntos
