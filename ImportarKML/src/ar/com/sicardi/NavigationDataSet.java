@@ -13,34 +13,34 @@ private Placemark routePlacemark;
 public String toString() { 
 String s= ""; 
 for (Iterator<Placemark> iter=placemarks.iterator();iter.hasNext();) { 
-Placemark p = (Placemark)iter.next(); 
-s += p.getTitle() + "\n" + p.getDescription() + "\n\n"; 
+	Placemark p = (Placemark)iter.next(); 
+	s += p.getTitle() + "\n" + p.getDescription() + "\n\n"; 
 } 
 return s; 
 } 
 
 public void addCurrentPlacemark() { 
-placemarks.add(currentPlacemark); 
+	placemarks.add(currentPlacemark); 
 } 
 
 public ArrayList<Placemark> getPlacemarks() { 
-return placemarks; 
+	return placemarks; 
 } 
 
 public void setPlacemarks(ArrayList<Placemark> placemarks) { 
-this.placemarks = placemarks; 
+	this.placemarks = placemarks; 
 } 
 
 public Placemark getCurrentPlacemark() { 
-return currentPlacemark; 
+	return currentPlacemark; 
 } 
 
 public void setCurrentPlacemark(Placemark currentPlacemark) { 
-this.currentPlacemark = currentPlacemark; 
+	this.currentPlacemark = currentPlacemark; 
 } 
 
 public Placemark getRoutePlacemark() { 
-return routePlacemark; 
+	return routePlacemark; 
 }
  
 public void setRoutePlacemark(Placemark routePlacemark) {     
