@@ -83,7 +83,9 @@ String qName, Attributes atts) throws SAXException {
     } else if (localName.equals("styleUrl")) { 
     	this.in_styleUrl = true;  
 	} else if (localName.equals("Style")) { 
-		this.in_style  = true;  
+		this.in_style  = true; 
+		if (navigationDataSet.getCurrentStyle()==null) navigationDataSet.setCurrentStyle(new Style()); 	
+		navigationDataSet.getCurrentStyle().setIdAtributte(atts.getValue("id"));
 	} else if (localName.equals("href")) { 
 		this.in_iconHref = true; 
 	}
@@ -149,8 +151,7 @@ if(this.in_nametag){
 	} 
 	else 
 		if(this.in_iconHref ){ 
-			if (navigationDataSet.getCurrentPlacemark()==null) navigationDataSet.setCurrentPlacemark(new Placemark()); 
-			    navigationDataSet.getCurrentStyle().setIconHref(new String(ch, start, length).toString()); 
+			navigationDataSet.getCurrentStyle().setIconHref(new String(ch, start, length).toString()); 
 		} 
 } 
 }

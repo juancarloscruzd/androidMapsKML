@@ -316,40 +316,25 @@ public class DirectionMapActivity extends MapActivity {
             String[] pairs = path.trim().split(" "); 
      
             Log.d(myapp.APP, "pairs.length=" + pairs.length); 
-     
             String[] lngLat = pairs[0].split(","); // lngLat[0]=longitude lngLat[1]=latitude lngLat[2]=height 
-     
             Log.d(myapp.APP, "lnglat =" + lngLat + ", length: " + lngLat.length); 
      
             if (lngLat.length<3) lngLat = pairs[1].split(","); // if first pair is not transferred completely, take seconds pair //TODO  
-     
             try { 
+            	
                 GeoPoint startGP = new GeoPoint((int) (Double.parseDouble(lngLat[1]) * 1E6), (int) (Double.parseDouble(lngLat[0]) * 1E6)); 
-                mMapView01.getOverlays().add(new StadiumOverlay(startGP, startGP, 1)); 
-                GeoPoint gp1; 
-                GeoPoint gp2 = startGP; 
+                mMapView01.getOverlays().add(new StadiumOverlay(startGP, 1,color,tempPlace.getDescription(),tempPlace.getStyleUrl())); 
      
                 for (int i = 1; i < pairs.length; i++) // the last one would be crash 
                 { 
                     lngLat = pairs[i].split(","); 
-     
-                    gp1 = gp2; 
-     
-                    //if (lngLat.length >= 2 && gp1.getLatitudeE6() > 0 && gp1.getLongitudeE6() > 0 
-                           // && gp2.getLatitudeE6() > 0 && gp2.getLongitudeE6() > 0) { 
-     
-                        // for GeoPoint, first:latitude, second:longitude 
-                        gp2 = new GeoPoint((int) (Double.parseDouble(lngLat[1]) * 1E6), (int) (Double.parseDouble(lngLat[0]) * 1E6)); 
-     
-                        if (gp2.getLatitudeE6() != 22200000) {  
-                            mMapView01.getOverlays().add(new StadiumOverlay(gp1, gp2, 2, color)); 
-                            Log.d(myapp.APP, "draw:" + gp1.getLatitudeE6() + "/" + gp1.getLongitudeE6() + " TO " + gp2.getLatitudeE6() + "/" + gp2.getLongitudeE6()); 
+                    startGP = new GeoPoint((int) (Double.parseDouble(lngLat[1]) * 1E6), (int) (Double.parseDouble(lngLat[0]) * 1E6)); 
+                    if (startGP.getLatitudeE6() != 22200000) {  
+                            mMapView01.getOverlays().add(new StadiumOverlay(startGP, 1, color,tempPlace.getDescription(),tempPlace.getStyleUrl())); 
+                            Log.d(myapp.APP, "draw STADIUM IN: " + startGP.getLatitudeE6() + "/" + startGP.getLongitudeE6()); 
                         } 
-                   // } 
-                    // Log.d(myapp.APP,"pair:" + pairs[i]); 
                 } 
-                //routeOverlays.add(new RouteOverlay(gp2,gp2, 3)); 
-                mMapView01.getOverlays().add(new StadiumOverlay(gp2, gp2, 3)); 
+                mMapView01.getOverlays().add(new StadiumOverlay(startGP, 1, color,tempPlace.getDescription(),tempPlace.getStyleUrl())); 
             } catch (NumberFormatException e) { 
                 Log.e(myapp.APP, "Cannot draw route.", e); 
             } 

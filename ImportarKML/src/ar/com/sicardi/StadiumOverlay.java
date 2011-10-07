@@ -1,6 +1,12 @@
 package ar.com.sicardi;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 import android.graphics.Bitmap; 
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas; 
 import android.graphics.Color; 
 import android.graphics.Paint; 
@@ -14,24 +20,17 @@ import com.google.android.maps.Projection;
  
 public class StadiumOverlay extends Overlay {  
  
-private GeoPoint gp1; 
-private GeoPoint gp2; 
+private GeoPoint gp; 
 private int mRadius=6; 
 private int mode=0; 
 private int defaultColor; 
 private String text=""; 
 private Bitmap img = null; 
  
-public StadiumOverlay(GeoPoint gp1,GeoPoint gp2,int mode) { // GeoPoint is a int. (6E) 
-    this.gp1 = gp1; 
-    this.gp2 = gp2; 
-    this.mode = mode; 
-    defaultColor = 999; // no defaultColor 
-} 
  
-public StadiumOverlay(GeoPoint gp1,GeoPoint gp2,int mode, int defaultColor) { 
-    this.gp1 = gp1; 
-    this.gp2 = gp2; 
+public StadiumOverlay(GeoPoint gp1,int mode, int defaultColor, String texTo, String urlIcon) { 
+    this.gp = gp;
+    this.text = texTo;
     this.mode = mode; 
     this.defaultColor = defaultColor; 
 } 
@@ -55,53 +54,47 @@ public boolean draw (Canvas canvas, MapView mapView, boolean shadow, long when) 
         Paint paint = new Paint(); 
         paint.setAntiAlias(true); 
         Point point = new Point(); 
-        projection.toPixels(gp1, point); 
-        // mode=1&#65306;start 
+        projection.toPixels(gp, point); 
+        // mode=1 -> unico modo, ya habra mas
         if(mode==1) { 
-            if(defaultColor==999) 
-            paint.setColor(Color.BLACK); // Color.BLUE 
-            else 
-            paint.setColor(defaultColor); 
-            RectF oval=new RectF(point.x - mRadius, point.y - mRadius, 
-            point.x + mRadius, point.y + mRadius); 
-            // start point 
-            canvas.drawOval(oval, paint); 
-        } 
-        // mode=2&#65306;path 
-        else if(mode==2) { 
-            if(defaultColor==999) 
-            paint.setColor(Color.RED); 
-            else 
-            paint.setColor(defaultColor); 
-            Point point2 = new Point(); 
-            projection.toPixels(gp2, point2); 
-            paint.setStrokeWidth(5); 
-            paint.setAlpha(defaultColor==Color.parseColor("#6C8715")?220:120); 
-            canvas.drawLine(point.x, point.y, point2.x,point2.y, paint); 
-        } 
-        /* mode=3&#65306;end */ 
-        else if(mode==3) { 
-            /* the last path */ 
- 
-            if(defaultColor==999) 
-                paint.setColor(Color.BLACK);  // Color.GREEN 
-            else 
-                paint.setColor(defaultColor); 
- 
-            Point point2 = new Point(); 
-            projection.toPixels(gp2, point2); 
-            paint.setStrokeWidth(5); 
-            paint.setAlpha(defaultColor==Color.parseColor("#6C8715")?220:120); 
-            canvas.drawLine(point.x, point.y, point2.x,point2.y, paint); 
-            RectF oval=new RectF(point2.x - mRadius,point2.y - mRadius, 
-            point2.x + mRadius,point2.y + mRadius); 
-            /* end point */ 
-            paint.setAlpha(255); 
-            canvas.drawOval(oval, paint); 
+            if(defaultColor==999) {
+            	paint.setColor(Color.BLACK); // Color.BLUE
+	            paint.setColor(defaultColor); 
+	            RectF oval=new RectF(point.x - mRadius, point.y - mRadius, 
+	            point.x + mRadius, point.y + mRadius); 
+	            canvas.drawOval(oval, paint); } 
+            else {
+                //Definimos el pincel de dibujo
+                Paint p = new Paint();
+                p.setColor(defaultColor);
+                
+            	//Marca Ejemplo 2: Bitmap
+            	Bitmap bm = BitmapFactory.decodeResource(
+            	        mapView.getResources(),
+            	        R.drawable.marcador_google_maps);
+            	 
+            	canvas.drawBitmap(bm, point.x - bm.getWidth(),
+            	        point.y - bm.getHeight(), p);
+            }
         } 
     } 
     return super.draw(canvas, mapView, shadow, when); 
 } 
+
+public static Bitmap getBitmapFromURL(String src) {
+  try {
+		URL url = new URL(src);
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		connection.setDoInput(true);
+		connection.connect();
+		InputStream input = connection.getInputStream();
+		Bitmap myBitmap = BitmapFactory.decodeStream(input);
+		return myBitmap;
+  } catch (IOException e) {
+			e.printStackTrace();
+		return null;
+	}
+}
  
 } 
 
