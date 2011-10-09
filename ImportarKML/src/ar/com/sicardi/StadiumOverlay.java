@@ -28,8 +28,9 @@ private String text="";
 private Bitmap img = null; 
  
  
-public StadiumOverlay(GeoPoint gp1,int mode, int defaultColor, String texTo, String urlIcon) { 
-    this.gp = gp;
+public StadiumOverlay(GeoPoint gp1,int mode, int defaultColor, String texTo, String urlIcon) {
+	this.img = getBitmapFromURL(urlIcon);
+    this.gp = gp1;
     this.text = texTo;
     this.mode = mode; 
     this.defaultColor = defaultColor; 
@@ -68,13 +69,16 @@ public boolean draw (Canvas canvas, MapView mapView, boolean shadow, long when) 
                 Paint p = new Paint();
                 p.setColor(defaultColor);
                 
-            	//Marca Ejemplo 2: Bitmap
-            	Bitmap bm = BitmapFactory.decodeResource(
-            	        mapView.getResources(),
-            	        R.drawable.marcador_google_maps);
-            	 
-            	canvas.drawBitmap(bm, point.x - bm.getWidth(),
-            	        point.y - bm.getHeight(), p);
+
+            	if(this.img == null)   {
+                	//Marca Ejemplo 2: Bitmap
+                	Bitmap bm = BitmapFactory.decodeResource(
+                	        mapView.getResources(),
+                	        R.drawable.marcador_google_maps);
+                	this.img = bm;
+            	}
+            	canvas.drawBitmap(this.img, point.x - this.img.getWidth(),
+            	        point.y - this.img.getHeight(), p);
             }
         } 
     } 

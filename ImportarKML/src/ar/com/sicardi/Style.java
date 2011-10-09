@@ -21,4 +21,8 @@ public class Style {
 		return idAtributte;
 	}
 
+	public boolean isIdStyle(String idStyle) {
+		return (this.idAtributte.equals(idStyle.substring(1, idStyle.length())));
+	}
+
 }

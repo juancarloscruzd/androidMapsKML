@@ -84,7 +84,7 @@ String qName, Attributes atts) throws SAXException {
     	this.in_styleUrl = true;  
 	} else if (localName.equals("Style")) { 
 		this.in_style  = true; 
-		if (navigationDataSet.getCurrentStyle()==null) navigationDataSet.setCurrentStyle(new Style()); 	
+		navigationDataSet.setCurrentStyle(new Style()); 	
 		navigationDataSet.getCurrentStyle().setIdAtributte(atts.getValue("id"));
 	} else if (localName.equals("href")) { 
 		this.in_iconHref = true; 

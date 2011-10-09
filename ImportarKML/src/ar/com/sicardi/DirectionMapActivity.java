@@ -60,64 +60,15 @@ public class DirectionMapActivity extends MapActivity {
      * 
      */
     public void parseandoLocal(boolean rutas){
-        btnSatelite = (Button)findViewById(R.id.BtnSatelite);
-        btnCentrar = (Button)findViewById(R.id.BtnCentrar);
-        btnAnimar = (Button)findViewById(R.id.BtnAnimar);
-        btnMover = (Button)findViewById(R.id.BtnMover);
-        //Controlador del mapa
-        controlMapa = mapView.getController();
-        btnSatelite.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				if(mapView.isSatellite())
-					mapView.setSatellite(false);
-				else
-					mapView.setSatellite(true);
-			}
-		});
-        btnCentrar.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				Double latitud = 37.40*1E6;
-				Double longitud = -5.99*1E6;
-				GeoPoint loc = 
-					new GeoPoint(latitud.intValue(), longitud.intValue());
-				controlMapa.setCenter(loc);
-				controlMapa.setZoom(10);
-			}
-		});
-        btnAnimar.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				Double latitud = 37.40*1E6;
-				Double longitud = -5.99*1E6;
-				GeoPoint loc = 
-					new GeoPoint(latitud.intValue(), longitud.intValue());
-				controlMapa.animateTo(loc);
-				int zoomActual = mapView.getZoomLevel();
-				for(int i=zoomActual; i<10; i++)
-				{
-					controlMapa.zoomIn();
-				}
-			}
-		});
-        btnMover.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View arg0) {
-				controlMapa.scrollBy(40, 40);
-			}
-		});
+        cargarBotones();
 
         // Acquire a reference to the system Location Manager 
         LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE); 
  
         String locationProvider = LocationManager.NETWORK_PROVIDER; 
         Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider); 
-		
-        //Double latitud = -14.91 +2.0000001; //Double latitud = 37.40*1E6;   -34.606293
-		//Double longitud = -57.96 +1.0000001; //Double longitud = -5.99*1E6; -58.472511
-		Double latitud = -36.606293; //Double latitud = 37.40*1E6;   
-		Double longitud = -62.472511; //Double longitud = -5.99*1E6; 
+		Double latitud = -38.5621265; //Double latitud = 37.40*1E6;   
+		Double longitud = -58.7449265; //Double longitud = -5.99*1E6; 
 		List<Double> destD = new ArrayList<Double>();
         destD.add(latitud);
         destD.add(longitud);
@@ -173,10 +124,10 @@ public class DirectionMapActivity extends MapActivity {
                 // dibuja la RUTA/puntos
                 drawStadium(ds, Color.parseColor("#add331"), mapView ); //drawPath dibuja ruta
             }
-            // centrar y acomodar zoom en el mapa 
-            MapController mc = mapView.getController(); 
-            mc.zoomToSpan(currentPoint.getLatitudeE6()*2,currentPoint.getLongitudeE6()*2); 
-            mc.animateTo(new GeoPoint( 
+            // centrar y acomodar zoom en el mapa
+            controlMapa.setZoom(10);
+            controlMapa.zoomToSpan(currentPoint.getLatitudeE6()*2,currentPoint.getLongitudeE6()*2); 
+            controlMapa.animateTo(new GeoPoint( 
                     (currentPoint.getLatitudeE6() + destPoint.getLatitudeE6()) / 2 
                     , (currentPoint.getLongitudeE6() + destPoint.getLongitudeE6()) / 2));
  
@@ -185,6 +136,58 @@ public class DirectionMapActivity extends MapActivity {
         }    	
     }
     
+	private void cargarBotones() {
+    	btnSatelite = (Button)findViewById(R.id.BtnSatelite);
+        btnSatelite.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				if(mapView.isSatellite())
+					mapView.setSatellite(false);
+				else
+					mapView.setSatellite(true);
+			}
+		});
+
+        btnCentrar = (Button)findViewById(R.id.BtnCentrar);
+        btnCentrar.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				Double latitud = 37.40*1E6;
+				Double longitud = -5.99*1E6;
+				GeoPoint loc = 
+					new GeoPoint(latitud.intValue(), longitud.intValue());
+				controlMapa.setCenter(loc);
+				controlMapa.setZoom(10);
+			}
+		});
+
+        btnAnimar = (Button)findViewById(R.id.BtnAnimar);
+        btnAnimar.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				Double latitud = 37.40*1E6;
+				Double longitud = -5.99*1E6;
+				GeoPoint loc = 
+					new GeoPoint(latitud.intValue(), longitud.intValue());
+				controlMapa.animateTo(loc);
+				int zoomActual = mapView.getZoomLevel();
+				for(int i=zoomActual; i<10; i++)
+				{
+					controlMapa.zoomIn();
+				}
+			}
+		});
+
+        btnMover = (Button)findViewById(R.id.BtnMover);
+        btnMover.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				controlMapa.scrollBy(40, 40);
+			}
+		});
+		
+	}
+
 	/***
      * 
      */
@@ -321,9 +324,11 @@ public class DirectionMapActivity extends MapActivity {
      
             if (lngLat.length<3) lngLat = pairs[1].split(","); // if first pair is not transferred completely, take seconds pair //TODO  
             try { 
-            	
+            	Style styleTmpe = navSet.getStyleById(tempPlace.getStyleUrl());
+            	String styleTmp = null;
+            	if(styleTmpe!=null)  styleTmp = styleTmpe.iconHref;
                 GeoPoint startGP = new GeoPoint((int) (Double.parseDouble(lngLat[1]) * 1E6), (int) (Double.parseDouble(lngLat[0]) * 1E6)); 
-                mMapView01.getOverlays().add(new StadiumOverlay(startGP, 1,color,tempPlace.getDescription(),tempPlace.getStyleUrl())); 
+                mMapView01.getOverlays().add(new StadiumOverlay(startGP, 1,color,tempPlace.getDescription(),styleTmp)); 
      
                 for (int i = 1; i < pairs.length; i++) // the last one would be crash 
                 { 

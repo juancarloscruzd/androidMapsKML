@@ -67,4 +67,12 @@ public Style getCurrentStyle() {
 public void addCurrentStyle() {
 	styles.add(currentStyle); 
 }
+
+public Style getStyleById(String idStyle) {
+	for(Style styleTmp : this.styles)  {
+		if(styleTmp.isIdStyle(idStyle)) return styleTmp;
+	} 
+	return null;
+}
+
 }
