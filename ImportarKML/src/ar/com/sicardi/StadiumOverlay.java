@@ -77,8 +77,11 @@ public boolean draw (Canvas canvas, MapView mapView, boolean shadow, long when) 
                 	        R.drawable.marcador_google_maps);
                 	this.img = bm;
             	}
-            	canvas.drawBitmap(this.img, point.x - this.img.getWidth(),
-            	        point.y - this.img.getHeight(), p);
+            	else{
+            		this.img = Bitmap.createScaledBitmap(this.img, 25, 25, false); 
+            	}
+            	//canvas.drawBitmap(this.img, point.x - this.img.getWidth(),point.y - this.img.getHeight(), p);
+            	canvas.drawBitmap(this.img, point.x,point.y , p);
             }
         } 
     } 
@@ -99,6 +102,30 @@ public static Bitmap getBitmapFromURL(String src) {
 		return null;
 	}
 }
+
+public static Bitmap ShrinkBitmap(Bitmap bitmap, int width, int height){
+	   
+    BitmapFactory.Options bmpFactoryOptions = new BitmapFactory.Options();
+       bmpFactoryOptions.inJustDecodeBounds = true;
+       //Bitmap bitmap = BitmapFactory.decodeFile(file, bmpFactoryOptions);
+        
+       int heightRatio = (int)Math.ceil(bmpFactoryOptions.outHeight/(float)height);
+       int widthRatio = (int)Math.ceil(bmpFactoryOptions.outWidth/(float)width);
+        
+       if (heightRatio > 1 || widthRatio > 1)
+       {
+        if (heightRatio > widthRatio)
+        {
+         bmpFactoryOptions.inSampleSize = heightRatio;
+        } else {
+         bmpFactoryOptions.inSampleSize = widthRatio;
+        }
+       }
+        
+       bmpFactoryOptions.inJustDecodeBounds = false;
+       //bitmap = BitmapFactory.decodeFile(file, bmpFactoryOptions);
+    return bitmap;
+   }
  
 } 
 

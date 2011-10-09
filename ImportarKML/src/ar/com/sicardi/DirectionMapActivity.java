@@ -329,17 +329,7 @@ public class DirectionMapActivity extends MapActivity {
             	if(styleTmpe!=null)  styleTmp = styleTmpe.iconHref;
                 GeoPoint startGP = new GeoPoint((int) (Double.parseDouble(lngLat[1]) * 1E6), (int) (Double.parseDouble(lngLat[0]) * 1E6)); 
                 mMapView01.getOverlays().add(new StadiumOverlay(startGP, 1,color,tempPlace.getDescription(),styleTmp)); 
-     
-                for (int i = 1; i < pairs.length; i++) // the last one would be crash 
-                { 
-                    lngLat = pairs[i].split(","); 
-                    startGP = new GeoPoint((int) (Double.parseDouble(lngLat[1]) * 1E6), (int) (Double.parseDouble(lngLat[0]) * 1E6)); 
-                    if (startGP.getLatitudeE6() != 22200000) {  
-                            mMapView01.getOverlays().add(new StadiumOverlay(startGP, 1, color,tempPlace.getDescription(),tempPlace.getStyleUrl())); 
-                            Log.d(myapp.APP, "draw STADIUM IN: " + startGP.getLatitudeE6() + "/" + startGP.getLongitudeE6()); 
-                        } 
-                } 
-                mMapView01.getOverlays().add(new StadiumOverlay(startGP, 1, color,tempPlace.getDescription(),tempPlace.getStyleUrl())); 
+                Log.d(myapp.APP, "draw STADIUM IN: " + startGP.getLatitudeE6() + "/" + startGP.getLongitudeE6()); 
             } catch (NumberFormatException e) { 
                 Log.e(myapp.APP, "Cannot draw route.", e); 
             } 
