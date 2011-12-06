@@ -1,11 +1,21 @@
 package ar.com.sicardi;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -14,6 +24,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
 import android.content.Context;
@@ -81,49 +92,12 @@ public class DirectionMapActivity extends MapActivity {
         else {
             currentPoint = destPoint;	       	
         }
-        
-        
-       StringBuilder urlString = new StringBuilder(); 
-        //commit     
-        //urlString.append("http://maps.google.com/maps?f=d&hl=es&saddr=-34.9134721,-57.9614658&daddr=-34.9134721,-57.9614658&ie=UTF8&0&om=0&output=kml");
-       urlString.append("http://dl.dropbox.com/u/20919379/PartidosFinal.kml");
-        
-        try{ 
-            //setea la url
-            URL url = new URL(urlString.toString()); 
-            // crea el factory del parser 
-            SAXParserFactory factory = SAXParserFactory.newInstance(); 
-            // crea un parser
-            SAXParser parser = factory.newSAXParser(); 
-            // crea un lector del parser 
-            XMLReader xmlreader = parser.getXMLReader(); 
-            // instancia un manejador de la navegacion del parseo // DECIDE COMO TRATAR LOS TAGS XML 
-            NavigationSaxHandler navSaxHandler = new NavigationSaxHandler(); 
-            // le asigna el manejador al lector xml
-            xmlreader.setContentHandler(navSaxHandler); 
-            // toma el KML de la URL pasada
-            InputSource is = new InputSource(url.openStream()); 
-            // ACA SE PARSEA EL KML            
-            xmlreader.parse(is); 
-            // Retorna los datos generados del parseo en un DATASET
-            NavigationDataSet ds = navSaxHandler.getParsedData(); 
- 
-            if (rutas) {
-                // dibuja la RUTA/puntos
-                drawPath(ds, Color.parseColor("#add331"), mapView ); //drawPath dibuja ruta
-                
-                // encontrar los l�mites usando itemized overlay 
-	            Drawable dot = this.getResources().getDrawable(R.drawable.pixel); 
-	            MapItemizedOverlay bgItemizedOverlay = new MapItemizedOverlay(dot,this); 
-	            OverlayItem currentPixel = new OverlayItem(destPoint, null, null ); 
-	            OverlayItem destPixel = new OverlayItem(currentPoint, null, null ); 
-	            bgItemizedOverlay.addOverlay(currentPixel); 
-	            bgItemizedOverlay.addOverlay(destPixel);
-            }
-            else {
-                // dibuja la RUTA/puntos
-                drawStadium(ds, Color.parseColor("#add331"), mapView ); //drawPath dibuja ruta
-            }
+       
+        InputStream archivo = null; 
+        try{
+        	archivo = recuperarArchivo("PartidosFinal.kml","http://dl.dropbox.com/u/20919379/PartidosFinal.kml");
+        	NavigationDataSet ds = parsearArchivo(archivo);
+            dibujaEnMapa(mapView,ds,rutas,destPoint,currentPoint);
             // centrar y acomodar zoom en el mapa
             controlMapa.setZoom(10);
             controlMapa.zoomToSpan(currentPoint.getLatitudeE6()*2,currentPoint.getLongitudeE6()*2); 
@@ -136,6 +110,95 @@ public class DirectionMapActivity extends MapActivity {
         }    	
     }
     
+	private void dibujaEnMapa(MapView mapView2, NavigationDataSet ds, boolean rutas, GeoPoint destPoint, GeoPoint currentPoint) {
+        if (rutas) {
+            // dibuja la RUTA/puntos
+            drawPath(ds, Color.parseColor("#add331"), mapView2 ); //drawPath dibuja ruta
+            
+            // encontrar los l�mites usando itemized overlay 
+            Drawable dot = this.getResources().getDrawable(R.drawable.pixel); 
+            MapItemizedOverlay bgItemizedOverlay = new MapItemizedOverlay(dot,this); 
+            OverlayItem currentPixel = new OverlayItem(destPoint, null, null ); 
+            OverlayItem destPixel = new OverlayItem(currentPoint, null, null ); 
+            bgItemizedOverlay.addOverlay(currentPixel); 
+            bgItemizedOverlay.addOverlay(destPixel);
+        }
+        else {
+            // dibuja la RUTA/puntos
+            drawStadium(ds, Color.parseColor("#add331"), mapView2 ); //drawPath dibuja ruta
+        }
+	}
+
+	private NavigationDataSet parsearArchivo(InputStream archivo) throws ParserConfigurationException, SAXException, IOException {
+        // crea el factory del parser 
+        SAXParserFactory factory = SAXParserFactory.newInstance(); 
+        // crea un parser
+        SAXParser parser = factory.newSAXParser(); 
+        // crea un lector del parser 
+        XMLReader xmlreader = parser.getXMLReader(); 
+        // instancia un manejador de la navegacion del parseo // DECIDE COMO TRATAR LOS TAGS XML 
+        NavigationSaxHandler navSaxHandler = new NavigationSaxHandler(); 
+        // le asigna el manejador al lector xml
+        xmlreader.setContentHandler(navSaxHandler); 
+        // toma el KML de la URL pasada
+        InputSource is = new InputSource(archivo); 
+        // ACA SE PARSEA EL KML            
+        xmlreader.parse(is); 
+        // Retorna los datos generados del parseo en un DATASET
+        NavigationDataSet ds = navSaxHandler.getParsedData();
+		return ds;
+	}
+
+	private InputStream recuperarArchivo(String string, String urls) throws IOException {
+      	 StringBuilder urlString = new StringBuilder(); 
+         //urlString.append("http://maps.google.com/maps?f=d&hl=es&saddr=-34.9134721,-57.9614658&daddr=-34.9134721,-57.9614658&ie=UTF8&0&om=0&output=kml");
+      	 InputStream archivo = null;
+      	try
+      	{   
+      		archivo = openFileInput(string);
+      	}
+      	catch (Exception ex)
+      	{
+      	    Log.e("Ficheros", "Error al leer fichero desde memoria interna");
+        	//urlString
+            urlString.append(urls);
+            //setea la url
+            URL url = new URL(urlString.toString());
+            archivo = url.openStream();
+            OutputStreamWriter fout=
+                new OutputStreamWriter(castInputStreamToFileOutputStream(archivo));
+         
+            fout.write("Texto de prueba.");
+            fout.close();
+      	}
+        return archivo;
+
+	}
+
+	private FileOutputStream castInputStreamToFileOutputStream(InputStream archivo) {
+		FileOutputStream out = null; 
+		try {
+			 
+				// write the inputStream to a FileOutputStream
+				out = new FileOutputStream(new File("temp.kml"));
+			 
+				int read = 0;
+				byte[] bytes = new byte[1024];
+			 
+				while ((read = archivo.read(bytes)) != -1) {
+					out.write(bytes, 0, read);
+				}
+			 	out.flush();
+				out.close();
+			 
+				System.out.println("New file created!");
+			    } 
+		   catch (IOException e) {
+				System.out.println(e.getMessage());
+	     }
+		return out;
+	}
+
 	private void cargarBotones() {
     	btnSatelite = (Button)findViewById(R.id.BtnSatelite);
         btnSatelite.setOnClickListener(new OnClickListener() {
