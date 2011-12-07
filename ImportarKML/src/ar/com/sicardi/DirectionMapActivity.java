@@ -2,6 +2,7 @@ package ar.com.sicardi;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -95,10 +96,11 @@ public class DirectionMapActivity extends MapActivity {
        
         InputStream archivo = null; 
         try{
-        	archivo = recuperarArchivo("PartidosFinal.kml","http://dl.dropbox.com/u/20919379/PartidosFinal.kml");
+        	archivo = recuperarArchivo("/data/data/ar.com.sicardi/PartidosFinal.kml","http://dl.dropbox.com/u/20919379/PartidosFinal.kml");
         	NavigationDataSet ds = parsearArchivo(archivo);
             dibujaEnMapa(mapView,ds,rutas,destPoint,currentPoint);
             // centrar y acomodar zoom en el mapa
+            controlMapa = mapView.getController();
             controlMapa.setZoom(10);
             controlMapa.zoomToSpan(currentPoint.getLatitudeE6()*2,currentPoint.getLongitudeE6()*2); 
             controlMapa.animateTo(new GeoPoint( 
@@ -155,7 +157,8 @@ public class DirectionMapActivity extends MapActivity {
       	 InputStream archivo = null;
       	try
       	{   
-      		archivo = openFileInput(string);
+      		archivo  = new FileInputStream(string); 
+      		//archivo = openFileInput(string);
       	}
       	catch (Exception ex)
       	{
@@ -166,33 +169,32 @@ public class DirectionMapActivity extends MapActivity {
             URL url = new URL(urlString.toString());
             archivo = url.openStream();
             OutputStreamWriter fout=
-                new OutputStreamWriter(castInputStreamToFileOutputStream(archivo));
-         
-            fout.write("Texto de prueba.");
+                new OutputStreamWriter(castInputStreamToFileOutputStream(string,archivo));
             fout.close();
+            
       	}
         return archivo;
 
 	}
 
-	private FileOutputStream castInputStreamToFileOutputStream(InputStream archivo) {
+	private FileOutputStream castInputStreamToFileOutputStream(String string, InputStream archivo) {
 		FileOutputStream out = null; 
 		try {
-			 
-				// write the inputStream to a FileOutputStream
-				out = new FileOutputStream(new File("temp.kml"));
-			 
-				int read = 0;
-				byte[] bytes = new byte[1024];
-			 
-				while ((read = archivo.read(bytes)) != -1) {
+			  
+		     out = new FileOutputStream(string);
+			 int read = 0;
+			 byte[] bytes = new byte[1024];
+			 while ((read = archivo.read(bytes)) != -1) {
 					out.write(bytes, 0, read);
-				}
-			 	out.flush();
-				out.close();
-			 
+			 }
+			 out.flush();
+			 out.close();
+			 		      
+			 /* Writer out = new OutputStreamWriter(fos, "UTF8");
+		      out.write(str);
+		      out.close();*/
 				System.out.println("New file created!");
-			    } 
+			} 
 		   catch (IOException e) {
 				System.out.println(e.getMessage());
 	     }
