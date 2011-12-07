@@ -1,22 +1,29 @@
 package ar.com.sicardi;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import android.graphics.Bitmap; 
+import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas; 
-import android.graphics.Color; 
-import android.graphics.Paint; 
-import android.graphics.Point; 
-import android.graphics.RectF; 
- 
-import com.google.android.maps.GeoPoint; 
-import com.google.android.maps.MapView; 
-import com.google.android.maps.Overlay; 
-import com.google.android.maps.Projection; 
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Point;
+import android.graphics.RectF;
+import android.util.Log;
+import android.widget.Toast;
+
+import com.google.android.maps.GeoPoint;
+import com.google.android.maps.MapView;
+import com.google.android.maps.Overlay;
+import com.google.android.maps.Projection;
  
 public class StadiumOverlay extends Overlay {  
  
@@ -25,17 +32,49 @@ private int mRadius=6;
 private int mode=0; 
 private int defaultColor; 
 private String text=""; 
-private Bitmap img = null; 
+private Bitmap img = null;
+private String equipo; 
  
  
-public StadiumOverlay(GeoPoint gp1,int mode, int defaultColor, String texTo, String urlIcon) {
-	this.img = getBitmapFromURL(urlIcon);
+public StadiumOverlay(GeoPoint gp1,int mode, int defaultColor, String texTo, String urlIcon, long modoArchivo) {
+	int slashIndex = urlIcon.lastIndexOf('/');
+	this.equipo = urlIcon.substring(slashIndex + 1);
+	if(modoArchivo==1L) this.img =  getBitmapFromFile(this.equipo);
+	else {
+		this.img = getBitmapFromURL(urlIcon);
+        setImagen(this.img,this.equipo);
+	}
     this.gp = gp1;
     this.text = texTo;
     this.mode = mode; 
     this.defaultColor = defaultColor; 
+    this.text = " ";
 } 
  
+private Bitmap getBitmapFromFile(String filename) {
+	FileInputStream is;
+    File f = null;
+    Bitmap bitmap = null;
+    f = new File(Parametros.PATH_MEMORIA+filename);
+    if (f.canRead()) {
+      Log.d("FileStorage", "reading file " + f.getAbsolutePath() + " - "
+          + filename);
+    } else {
+      Log.d("FileStorage", "Can't read file " + filename);
+    }
+  try {
+      is = new FileInputStream(f);
+      if (is != null && is.available() > 0) {
+		        bitmap = BitmapFactory.decodeStream(is);
+	  } else {
+		        Log.w("soFurryApp", "Can't load from external storage");
+	  }
+	} catch (Exception e) {
+		      Log.e("soFurryApp", "error in loadIcon", e);
+   }
+   return bitmap;
+}
+
 public void setText(String t) { 
     this.text = t; 
 } 
@@ -103,29 +142,42 @@ public static Bitmap getBitmapFromURL(String src) {
 	}
 }
 
-public static Bitmap ShrinkBitmap(Bitmap bitmap, int width, int height){
-	   
-    BitmapFactory.Options bmpFactoryOptions = new BitmapFactory.Options();
-       bmpFactoryOptions.inJustDecodeBounds = true;
-       //Bitmap bitmap = BitmapFactory.decodeFile(file, bmpFactoryOptions);
-        
-       int heightRatio = (int)Math.ceil(bmpFactoryOptions.outHeight/(float)height);
-       int widthRatio = (int)Math.ceil(bmpFactoryOptions.outWidth/(float)width);
-        
-       if (heightRatio > 1 || widthRatio > 1)
-       {
-        if (heightRatio > widthRatio)
-        {
-         bmpFactoryOptions.inSampleSize = heightRatio;
-        } else {
-         bmpFactoryOptions.inSampleSize = widthRatio;
+public void setImagen(Bitmap avatar,String nombre) {
+    
+    try {
+        FileOutputStream out=new FileOutputStream(Parametros.PATH_MEMORIA+nombre);
+        avatar.compress(Bitmap.CompressFormat.PNG, 90, out);
+        try {
+            out.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
-       }
-        
-       bmpFactoryOptions.inJustDecodeBounds = false;
-       //bitmap = BitmapFactory.decodeFile(file, bmpFactoryOptions);
-    return bitmap;
-   }
- 
+    } catch (FileNotFoundException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+    finally {
+    	
+    }
+}
+
+public GeoPoint getGp(){
+   return this.gp;	
+}
+
+@Override
+public boolean onTap(GeoPoint point, MapView mapView) 
+{
+	Context contexto = mapView.getContext();
+	String msg = "Lat: " + point.getLatitudeE6()/1E6 + " - " + 
+	             "Lon: " + point.getLongitudeE6()/1E6;
+	
+	Toast toast = Toast.makeText(contexto, msg, Toast.LENGTH_SHORT);
+	toast.show();
+	
+	return true;
+}
+    
 } 
 

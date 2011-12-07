@@ -28,6 +28,11 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:text="Mover" />
+			
+		<Button android:id="@+id/BtnRecorrer"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Recorrer" />  
 	    
 	</LinearLayout>
 <com.google.android.maps.MapView
