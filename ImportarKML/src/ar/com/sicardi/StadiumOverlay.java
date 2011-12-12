@@ -39,7 +39,13 @@ private String equipo;
 public StadiumOverlay(GeoPoint gp1,int mode, int defaultColor, String texTo, String urlIcon, long modoArchivo) {
 	int slashIndex = urlIcon.lastIndexOf('/');
 	this.equipo = urlIcon.substring(slashIndex + 1);
-	if(modoArchivo==1L) this.img =  getBitmapFromFile(this.equipo);
+	if(modoArchivo==1L) {
+		   this.img =  getBitmapFromFile(this.equipo);
+		   if(this.img==null) {
+    			this.img = getBitmapFromURL(urlIcon);
+		        setImagen(this.img,this.equipo);
+		}
+	}	
 	else {
 		this.img = getBitmapFromURL(urlIcon);
         setImagen(this.img,this.equipo);

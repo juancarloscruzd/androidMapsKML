@@ -15,9 +15,13 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -38,6 +42,9 @@ public class DirectionMapActivity extends MapActivity {
 	private Button btnRecorrer = null;
 	private MapController controlMapa = null;
 	private MapView mapView = null; 
+	private Factorythreads manejadorDeHilos;
+	private ThreadBlocking waitingStadium;
+	private ProgressDialog pd;
 	private long modoLocalOURL = 0L; //inicia en URL  y 1L local
 	
     public long getModoLocalOURL() {
@@ -52,22 +59,26 @@ public class DirectionMapActivity extends MapActivity {
     public void onCreate(Bundle savedInstanceState) { 
         super.onCreate(savedInstanceState); 
         setContentView(R.layout.main); 
- 
-        mapView = (MapView) findViewById(R.id.mapview); 
-        mapView.setBuiltInZoomControls(true); 
-        parseandoLocal(false);
-        //parseandoPorAPI();
- 
+        manejadorDeHilos = new Factorythreads();
+        manejadorDeHilos.abriendoPopUpProcessDialog(pd, DirectionMapActivity.this, "Espere", "Obteniendo estadios...", true, false);
+        waitingStadium = manejadorDeHilos.getHiloPopUpProcessDialog();
+		mapView = (MapView) findViewById(R.id.mapview); 
+        mapView.setBuiltInZoomControls(true);
+        cargarBotones();
+    	parseandoLocal(false);
+		waitingStadium.start();
+
     } 
 
+
+
+
+    
     /***
      * 
      */
     public void parseandoLocal(boolean rutas){
-        cargarBotones();
-
         GeoPoint currentPoint = DrawService.puntoCentralMap(Parametros.LATITUD_CORDOBA,Parametros.LONGITUD_CORDOBA,this);
-       
         InputStream archivo = null; 
         try{
         	archivo = FileHandler.recuperarArchivo(Parametros.PATH_MEMORIA+Parametros.ARCHIVO_KML,Parametros.ARCHIVO_KML_URL,this);
@@ -163,11 +174,12 @@ public class DirectionMapActivity extends MapActivity {
 
 			private void recorrerEstadios() {
 				controlMapa.animateTo(DrawService.puntoCentralMap(Parametros.LATITUD_CORDOBA, Parametros.LONGITUD_CORDOBA));
-				int zoomActual = mapView.getZoomLevel();
+				int zoomCentral = Parametros.ZOOM_DEFECTO;
 				for(Overlay overl : mapView.getOverlays()){
 					controlMapa.animateTo(((StadiumOverlay) overl).getGp());
-					zoomActual = Parametros.ZOOM_DEFECTO;
-					for(int i=zoomActual; i<10; i++) controlMapa.zoomIn();
+					controlMapa.setZoom(zoomCentral);
+					for(int i=zoomCentral; i<7; i++) controlMapa.zoomIn();
+					//mapView.forceLayout();
 				}
 			}
 		});
@@ -199,6 +211,8 @@ public class DirectionMapActivity extends MapActivity {
     protected boolean isRouteDisplayed() {
     	return true;
     }
+    
+
     
 }
     // and the rest of the methods in activity, e.g. drawPath() etc... 
